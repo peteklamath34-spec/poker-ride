@@ -265,6 +265,9 @@
     <span class="suits">♠ ♥ ♦ ♣</span>
     <h1>Poker Ride — Finish Line</h1>
     <p>Scan each rider's QR code as they arrive &nbsp;·&nbsp; Results rank automatically</p>
+    <p id="offline-status" style="font-size:12px;margin-top:6px;color:#a9c2b5;">
+      ⏳ Checking offline status…
+    </p>
   </div>
 
   <div class="layout">
@@ -654,6 +657,43 @@
   /* ---- Boot ---- */
   renderLeaderboard();
   startScanner();
+
+  /* ---- Offline caching ---- */
+  /* Registering the same service-worker.js used by the rider app means
+     this page is cached on first visit and works forever without WiFi. */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(function (reg) {
+          console.log('Finish-line: offline cache ready.');
+          // Update status badge
+          var el = document.getElementById('offline-status');
+          if (reg.active) {
+            el.textContent = '✅ Saved for offline use — works without WiFi';
+            el.style.color = '#6fcf97';
+          } else {
+            // First install — waiting for activation
+            var sw = reg.installing || reg.waiting;
+            if (sw) {
+              sw.addEventListener('statechange', function () {
+                if (sw.state === 'activated') {
+                  el.textContent = '✅ Saved for offline use — works without WiFi';
+                  el.style.color = '#6fcf97';
+                }
+              });
+            }
+          }
+        })
+        .catch(function () {
+          var el = document.getElementById('offline-status');
+          el.textContent = '⚠️ Offline caching unavailable — needs WiFi each time';
+          el.style.color = '#e8c66a';
+        });
+    });
+  } else {
+    document.getElementById('offline-status').textContent =
+      '⚠️ This browser does not support offline caching';
+  }
   </script>
 </body>
 </html>

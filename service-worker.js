@@ -1,7 +1,9 @@
 /* Poker Ride service worker — offline-first (cache first) */
-var CACHE = "poker-ride-v4";
+var CACHE = "poker-ride-v5";
 
-/* Core assets that must be cached for the app to run offline. */
+/* Core assets that must be cached for the app to run offline.
+   Includes finish-line.html and the scanning library so the
+   finish-line laptop works at campsites with no WiFi. */
 var CORE = [
   "./",
   "./index.html",
@@ -9,12 +11,13 @@ var CORE = [
   "./style.css",
   "./manifest.json",
   "./img/icon-192.png",
-  "./img/icon-512.png"
+  "./img/icon-512.png",
+  "./finish-line.html",
+  "./lib/jsQR.min.js"
 ];
 
 /* Optional assets — cached if present, but a 404 must not break install. */
 var OPTIONAL = [
-  "./lib/jsQR.min.js",
   "./lib/qrcode.min.js"
 ];
 
